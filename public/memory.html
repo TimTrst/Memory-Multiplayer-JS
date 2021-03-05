@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet prefetch" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+  <link rel="stylesheet prefetch" href="https://fonts.googleapis.com/css?family=Coda">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://kit.fontawesome.com/972d2f4720.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+  <div class="container gameContainer">
+    <div class="row headerRow"> 
+      <h1 class="heading">MemoryGame</h1>
+    </div>
+    <div class="row">
+      <div class="col-md-auto">
+        <div class="score-panel">
+          <h1>Stats</h1>
+          <ul>
+            <li>Player 1:</li>
+            <li><i class="fa fa-heart"></i></li>
+            <li><i class="fa fa-heart"></i></li>
+            <li><i class="fa fa-heart"></i></li>
+          </ul>
+          
+          <span class="movesPlayer1">0</span> Move(s)
+          
+          <ul>
+            <li>Player 2:</li>
+            <li><i class="fa fa-heart"></i></li>
+            <li><i class="fa fa-heart"></i></li>
+            <li><i class="fa fa-heart"></i></li>
+          </ul>
+          
+          <span class="movesPlayer2">0</span> Move(s)
+          
+          <div class="restartGame">
+            <button type="button" class="btn btn-primary">Revanche!</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-auto">
+        <section class="game">
+          <div class="game-card" data-card="pain">
+            <img class="card-front" src="img/pain.png" alt="Pain" />
+            <img class="card-back" src="img/solo.jpg" alt="solo" />
+          </div>
+          <div class="game-card" data-card="pain">
+            <img class="card-front" src="img/pain.png" alt="Pain" />
+            <img class="card-back" src="img/solo.jpg" alt="solo" />
+          </div>
+      
+          <div class="game-card" data-card="sasori">
+            <img class="card-front" src="img/sasori.jpg" alt="Sasori" />
+            <img class="card-back" src="img/solo.jpg" alt="solo" />
+          </div>
+          <div class="game-card" data-card="sasori">
+            <img class="card-front" src="img/sasori.jpg" alt="Sasori" />
+            <img class="card-back" src="img/solo.jpg" alt="solo" />
+          </div>
+      
+          <div class="game-card" data-card="kakuzo">
+            <img class="card-front" src="img/kakuzo.jpg" alt="Kakuzo" />
+            <img class="card-back" src="img/solo.jpg" alt="solo" />
+          </div>
+          <div class="game-card" data-card="kakuzo">
+            <img class="card-front" src="img/kakuzo.jpg" alt="Kakuzo" />
+            <img class="card-back" src="img/solo.jpg" alt="solo" />
+          </div>
+      
+          <div class="game-card" data-card="kakashi">
+            <img class="card-front" src="img/kakashi.jpg" alt="Kakashi" />
+            <img class="card-back" src="img/solo.jpg" alt="solo" />
+          </div>
+          <div class="game-card" data-card="kakashi">
+            <img class="card-front" src="img/kakashi.jpg" alt="Kakashi" />
+            <img class="card-back" src="img/solo.jpg" alt="solo" />
+          </div>
+      
+          <div class="game-card" data-card="itachi">
+            <img class="card-front" src="img/itachi.jpg" alt="Itachi" />
+            <img class="card-back" src="img/solo.jpg" alt="solo" />
+          </div>
+          <div class="game-card" data-card="itachi">
+            <img class="card-front" src="img/itachi.jpg" alt="Itachi" />
+            <img class="card-back" src="img/solo.jpg" alt="solo" />
+          </div>
+      
+          <div class="game-card" data-card="tenten">
+            <img class="card-front" src="img/tenten.png" alt="Tenten" />
+            <img class="card-back" src="img/solo.jpg" alt="solo" />
+          </div>
+          <div class="game-card" data-card="tenten">
+            <img class="card-front" src="img/tenten.png" alt="Tenten" />
+            <img class="card-back" src="img/solo.jpg" alt="solo" />
+          </div>
+        </section>
+      </div>
+      <div class="col-md-auto">
+        <div class="timer"></div>
+           <i class="fas fa-stopwatch fa-5x">10</i>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/index.js"></script>
+</body>
+
+</html>
