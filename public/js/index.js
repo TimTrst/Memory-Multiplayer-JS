@@ -74,7 +74,19 @@ function resetTurn(){
     lockGame = false;
 }
 
-cards.forEach(card => card.addEventListener('click', flipCard));
+(function shuffle(){
+    cards.forEach(card => {
+        let rand = Math.floor(Math.random() * 12);
+        card.style.order = rand;
+    });
+})();
+
+let playerOne = true;
+
+if(playerOne){
+
+    cards.forEach(card => card.addEventListener('click', flipCard));
+}
 
 socket.on('message', message => {
     console.log(message);
