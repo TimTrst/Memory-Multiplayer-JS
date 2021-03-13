@@ -1,5 +1,6 @@
 module.exports = {
-
+    createGameState,
+    gameLoop
 }
 
 function initGame() {
@@ -12,7 +13,7 @@ function createGameState() {
         players: [{
             score: 0,
             lifes: 3,
-            canFlipCard: false,
+            canFlipCard: true,
         },
         {
             score: 0,
@@ -22,5 +23,20 @@ function createGameState() {
     };
 }
 
-const playerOne = state.players[0];
-const playerTwo = state.players[1];
+function gameLoop(state){
+    if(!state){
+        return;
+    }
+ 
+    const playerOne = state.players[0];
+    const playerTwo = state.players[1];
+
+    if(playerOne.lifes === 0){
+        return 1;
+    }
+    if(playerTwo.lifes === 0){
+        return 2;
+    }
+
+    return false;
+}

@@ -1,66 +1,81 @@
-
-//Get username and lobby from url
-// const {username, lobby} = Qs.parse(location.search, {
-//     ignoreQueryPrefix: true
-// });
-
 const socket = io();
 
-// var joinForm=document.getElementById("join-form");
+//Abfangen der Server Antworten --> socket.on
+socket.on('init', handleInit);
+socket.on('gameState', handleGameState)
 
-// function evaluateJoinForm(e){
-//     if (e.preventDefault) e.preventDefault();
-//     socket.emit('joinLobby', {username, lobby});
-// }
+socket.on('flipCard', cardInfo =>{
+    flipCard(cardInfo);
+});
 
-// window.onload = function(){
-//     var createForm = document.getElementById("create-form");
-//     createForm.addEventListener("submit", (e) => {
-//         e.preventDefault();
-//         console.log("form sub");
-//         let username = e.username;
-//         let lobby = e.createLobby;
-//         console.log("create", username, lobby)
-//         socket.emit('createLobby',{username, lobby} );
-//     });
-// }
+socket.on('shuffleDeck', (deck) => {
+    shuffle(deck);
+});
 
+playerState = [];
+
+socket.on('playerState', (player) => {
+    playerState = player;
+});
 const cards = document.querySelectorAll('.game-card');
+
+var gameState;
+function handleGameState(state){
+    gameState = JSON.parse(state);
+}
 
 let cardFlipped = false;
 let firstCard, secondCard;
 let lockGame = false;
-//Warten, bis eine Karte geklickt wird 
-//--> wenn geklickt, wird der Klassenname der karte verändert, um eine Animation zu erzeugen
-function flipCard(){
+
+function flipCard(cardInfo){
+
     if(lockGame){
         return;
     }
 
-    this.classList.add('flip');
+    let toBeFlipped;
+    cards.forEach(card => {
+        if(card.dataset.card === cardInfo.name && card.style.order === cardInfo.order){
+            toBeFlipped = card;
+        }
+    });
+    
+    toBeFlipped.classList.add('flip');
 
     if(!cardFlipped){
-        //Erster klick
         cardFlipped = true;
-        firstCard = this;
+        firstCard = toBeFlipped;
         return;
     }else{
         cardFlipped = false;
-        secondCard = this;
+        secondCard = toBeFlipped;
     }
-
-    console.log(this)
+    console.log(" ssss",playerState[0].score)
+    console.log(" ssss",playerState[1].score)
     
     if(firstCard.dataset.card === secondCard.dataset.card){
         firstCard.removeEventListener('click', flipCard);
         secondCard.removeEventListener('click', flipCard);
-        console.log("went in")
+
+        if(playerState[0].canFlip === true){
+            socket.emit('updateScore', playerState[0].id)
+        }else{
+            socket.emit('updateScore', playerState[1].id)
+        }
+
         resetTurn();
     }else{
         lockGame = true;
         setTimeout(() => {
             firstCard.classList.remove('flip');
             secondCard.classList.remove('flip');
+
+            if(playerState[0].canFlip === true){
+                socket.emit('cannotFlip', playerState[0].id)
+            }else{
+                socket.emit('cannotFlip', playerState[1].id)
+            }
 
             resetTurn();
         }, 1500);
@@ -74,20 +89,29 @@ function resetTurn(){
     lockGame = false;
 }
 
-(function shuffle(){
-    cards.forEach(card => {
-        let rand = Math.floor(Math.random() * 12);
-        card.style.order = rand;
+//anfordern einer Shuffle funktion an Server
+socket.emit('shuffle');
+
+//Rückgabe der Informationen vom Server --> gleiches Reihenfolge der Karten für beide Nutzer
+function shuffle(deck){
+    cards.forEach((card,index) => {
+        card.style.order = deck[index];
     });
-})();
+};
 
-let playerOne = true;
+//Warten auf Klick eines Nutzers
+cards.forEach(card => card.addEventListener('click', () => sendFlippedCard(card)));
 
-if(playerOne){
-
-    cards.forEach(card => card.addEventListener('click', flipCard));
+//Senden der geklickten Karte an den Server
+function sendFlippedCard(card){
+    var cardInfo = {name: card.dataset.card, order: card.style.order}
+    socket.emit('flip', cardInfo );
 }
 
 socket.on('message', message => {
     console.log(message);
 });
+
+function handleInit(msg){
+    console.log(msg);
+}
