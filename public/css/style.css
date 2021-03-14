@@ -1,0 +1,95 @@
+* {
+	/* box-sizing: border-box; */
+    margin: 0;
+    padding: 0;
+}
+
+
+body{
+    background: rgb(178, 212, 211);
+} 
+
+ul{
+    list-style-type: none;
+}
+
+.headerRow{
+    margin-top: 30px;
+    margin-bottom: 80px;
+}
+.heading{
+    position: fixed;
+    left: 33.33%;
+}
+.score-panel {
+    padding: 40px;
+    text-align: center;
+    background: #1abc9c;
+    color: white;
+    font-size: 20px;
+    height: 670px;
+    border-radius: 5px;
+  }
+
+.gameContainer{
+    margin-left: 50px;
+}
+.gameContainer .row{
+    flex-wrap: nowrap;
+}
+
+.game{
+    float:left;
+    width: 900px;
+    height: 670px;
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 5px;
+    background: lightskyblue;
+    perspective: 1000px;
+    padding: 10px;
+}
+
+img{
+    border: 2px solid black;
+}
+
+.game-card{
+    width: calc(25% - 10px);
+    height: calc(33.333% - 10px);
+    margin: 5px;
+    position: relative;
+    transform: scale(1);
+    transform-style: preserve-3d;
+    transition:  transform .5s;
+}
+
+/*"Drück" Effekt, wenn karte geklickt wird*/
+.game-card:active{
+    transform: scale(.97);
+    transition: transform .15s;
+}
+
+/*Flip animation der Karte*/
+.game-card.flip{
+    transform: rotateY(180deg);
+}
+
+.card-front, .card-back{
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  position: absolute;
+  border-radius: 5px;
+  background: #494747;
+  backface-visibility: hidden;
+}
+
+.card-front{
+    transform: rotateY(180deg);
+}
+
+.restartGame{
+    margin: 20px;
+    left: 50%;
+}
