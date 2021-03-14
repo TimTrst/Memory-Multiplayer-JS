@@ -1,18 +1,18 @@
-const players = [];
+// const players = [];
 
-//Join user to lobby
-function playerJoin(id, username, lobby){
-    const player = {id, username, lobby};
-    players.push(player);
+// //Join user to lobby
+// function playerJoin(id, username, lobby){
+//     const player = {id, username, lobby};
+//     players.push(player);
 
-    return player;
-}
+//     return player;
+// }
 
-function getCurrentPlayer(id){
-    return players.find(player => player.id === id);
-}
+// function getCurrentPlayer(id){
+//     return players.find(player => player.id === id);
+// }
 
-module.exports = {
-    playerJoin,
-    getCurrentPlayer
-}
+// module.exports = {
+//     playerJoin,
+//     getCurrentPlayer
+// }

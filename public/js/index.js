@@ -21,6 +21,7 @@ socket.on('playerState', (player) => {
 socket.on('removeLife', (roundLoser) => {
     removeLife(roundLoser);
 });
+
 socket.on('resetGame', (deck) => {
     resetGame(deck);
 });
@@ -122,9 +123,15 @@ function sendFlippedCard(card) {
 //entfernen eines Herzen aus der Stats Box
 function removeLife(roundLoser) {
     var heart = document.querySelector(`#heartsPlayer${roundLoser}`);
+    // if(roundLoser === 0){
+    //     var heart = document.querySelector("#heartsPlayer1");
+    // }else{
+    //     var heart = document.querySelector("#heartsPlayer2");
+    // }
+   
     if(heart){
         heart.removeChild(heart.firstChild);
-    };
+    }
 }
 
 //Zurücksetzen des Spielfeldes, wenn eine Runde vorbei ist

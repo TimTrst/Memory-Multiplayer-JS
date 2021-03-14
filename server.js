@@ -17,7 +17,7 @@ const lobbys = {};
 const players = [];
 shuffled = false;
 
-let turns = 3;
+let turns = 5;
 const deck = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12];
 
 shuffle(deck);
@@ -104,8 +104,9 @@ io.on('connection', client => {
                     newDeck = shuffle(deck);
                     io.emit('removeLife', roundLoser);
                     io.emit('resetGame', newDeck); //neu geshuffeltes deck für die neue Runde
-                    j = roundLoser
-                    turns = 3;
+                    players[roundLoser].canFlip = true;
+                    players[roundLoser === 0 ? 1 : 0].canFlip = false;
+                    turns = 5;
                 }
                 console.log(players)
                 if (p.lives === 0) {
