@@ -9,88 +9,75 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+	<link rel="stylesheet" href="css/style.css" />
+	<title>ChatCord App</title>
 </head>
 
 <body>
-  <h1>Multiplayer Memory</h1>
-
-
-  <form method="get" action="/memory.html">
-    <button type="submit">Continue</button>
-  </form> 
-  <!-- <div class="card">
-    <div class="card-body">
-      <main join-main>
-        <form id = "join-lobby" action="lobby.html">
+		<div class="join-container">
+			<header class="join-header">
+				<h1>Memory</h1>
+			</header>
+			<main class="join-main">
+				<form action="memory.html">
+					<div class="form-control">
+						<label for="username">Username</label>
+						<input
+							type="text"
+							name="username"
+							id="username"
+							placeholder="Enter username..."
+							required
+						/>
           <div class="form-control">
-            <label for="username">Nutzername</label>
-            <input 
-              type="text" 
-              name="username"
-              id="username" 
-              placeholder="Enter user name"
-              required
-            >
-          </div>
-          <div class="form-control">
-            <label for="lobby">Lobby id</label>
-            <input 
-              type="text" 
-              name="lobby"
-              id="lobbyId" 
-              placeholder="Enter a lobby id"
-              required
-            >
-          </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-      </main>
-    </div>
+            <label for="newRoom">New Room</label>
+            <input
+              type="text"
+              name="roomname"
+              id="roomname"
+              placeholder="Enter your Roomname..."
+            />
+            <button id="btnAdd">Create Room</button>
+					</div>
 
 
-    <div class="card-body">
-      <main join-main>
-        <form id ="create-lobby" class="form"></form>
-          <div class="form-control">
-            <label for="username">Nutzername</label>
-            <input 
-              type="text" 
-              name="username"
-              id="createUsername" 
-              placeholder="Enter user name"
-              required
-            >
-          </div>
-          <div class="form-control">
-            <label for="lobby">Lobby id</label>
-            <input 
-              type="text" 
-              name="createLobby"
-              id="createLobbyId" 
-              placeholder="Enter a lobby id"
-              required
-            >
-          </div>
-          <button type="submit" class="btn btn-primary">Create New Lobby</button>
-        </form>
-      </main>
-    </div>
-  </div> -->
 
+					<div class="form-control">
+						<label for="room">Room</label>
+						<select name="room" id="room">
+              <option value="" disabled selected>Select or Create Room</option>              
+						</select>
+					</div>
 
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-    crossorigin="anonymous"></script>
+          <script>
+            const newRoom = document.getElementById("roomname");
+            const selects = document.getElementById("room");
+            const btnAdd = document.getElementById("btnAdd")
+
+            btnAdd.onclick = (e) => {
+              e.preventDefault();
+
+              if (newRoom.value == ''){
+                alert('Please enter the name.');
+                return;
+              }
+
+              const option = new Option(newRoom.value, newRoom.value);
+              selects.add(option, undefined);
+
+              name.value = '';
+              name.focus();
+
+            }
+
+          
+          </script>
+          
+					<button type="submit" class="btn">Join Game</button>
+				</form>
+			</main>
+		</div>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="js/index.js"></script>
-</body>
-
+	</body>
 </html>

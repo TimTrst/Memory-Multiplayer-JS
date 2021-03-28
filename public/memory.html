@@ -25,7 +25,7 @@
       <div class="col-md-auto">
         <div class="score-panel">
           <h1>Stats</h1>
-          Player 1:
+          <ul id="playername1">Player 1</ul>
 
           <p id="scorePlayer1">0</p>
 
@@ -37,7 +37,7 @@
           
           <span class="movesPlayer1">0</span> Move(s)
           
-          Player 2:
+          <ul id="playername2">Player 2</ul>
 
           <p id="scorePlayer2">0</p>
 
@@ -111,6 +111,23 @@
           </div>
         </section>
       </div>
+      <div class="chat-messages"></div>
+      <div class="chat-form-container">
+        <form id="chat-form">
+          <input
+            id="msg"
+            type="text"
+            placeholder="Enter Message"
+            required
+            autocomplete="off"
+          />
+          <button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
+        </form>
+      </div>
+      <h3><i class="fas fa-comments"></i> Room Name:</h3>
+      <h2 id="room-name"></h2>
+      <h3><i class="fas fa-users"></i> Players</h3>
+      <ul id="users"></ul>
       <div class="col-md-auto">
         <div class="timer"></div>
            <i class="fas fa-stopwatch fa-5x">10</i>
@@ -120,7 +137,7 @@
     <div class="row">
     </div>
   </div>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.1/qs.min.js" integrity="sha512-aTKlYRb1QfU1jlF3k+aS4AqTpnTXci4R79mkdie/bp6Xm51O5O3ESAYhvg6zoicj/PD6VYY0XrYwsWLcvGiKZQ==" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="js/index.js"></script>
 </body>

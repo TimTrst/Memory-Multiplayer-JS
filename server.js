@@ -7,61 +7,99 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
+
+
+const formatMessage = require('./utils/messages');
+const {
+    userJoin,
+    getCurrentUser,
+    userLeave,
+    getRoomUsers
+  } = require('./utils/users');
+
+
+
 //Setzen eines Statischen Ordners
 app.use(express.static(path.join(__dirname, 'public')));
 
 const { createGameState, gameLoop } = require('./utils/game');
 
 //const state = {};
-const lobbys = {};
-const players = [];
 shuffled = false;
 
-let turns = 3;
+let turns = 0;
 const deck = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12];
 
 shuffle(deck);
 
 let j = -1; //Zufälliges würfeln einer 1 oder 2 für einen zufälligen Start
 
-io.on('connection', client => {
-    client.emit('message', 'Welcome to Multiplayer Memory!')
+const botName = 'GameMaster';
+io.on('connection', socket => {
+    //Spieler joint Raum
+    socket.on('joinRoom', ({ username, room}) => {
+        const playerCount = Object.keys(getRoomUsers(room)).length;
+        if( playerCount < 2){
+            const user = userJoin(socket.id, username, room, playerCount);
+            socket.join(user.room);
 
-    if (players.length < 2) {
-        players.push({ id: client.id, canFlip: true, score: 0, lives: 3 });
-    }
+            //Willkommen an Spieler
+            socket.emit('message', formatMessage(botName, 'Welcome to Multiplayer Memory!'));
 
-    randomStart();
+            //Nachricht neuer Spieler gejoint
+            console.log('test')
+            socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${user.username} has joined the Game`));
 
-    console.log(j);
+            io.to(user.room).emit('roomUsers', {
+                room: user.room,
+                users: getRoomUsers(user.room)
+            });
+
+            if(playerCount === 1){
+                randomStart(room);
+            }
+
+        }else{
+            window.alert("Raum voll!");
+            console.log('server voll')
+        }
+    });
+
+    socket.on('chatMessage', msg => {
+        const user = getCurrentUser(socket.id);
+        console.log(msg);
+        io.to(user.room).emit('message', formatMessage(user.username, msg));
+    });     
+
+
+    /*console.log(j);
     console.log(players)
     if (players[j]) {
         players[j].canFlip = false;
-    }
+    }'*/
 
     if (!shuffled) {
-        client.on('shuffle', () => {
-            io.emit('shuffleDeck', deck)
+        socket.on('shuffle', msg => {
+            const user = getCurrentUser(socket.id);
+
+            io.to(user.room).emit('shuffleDeck', deck)
         })
     }
 
     //wird aufgerufen, wenn ein Nutzer auf eine Karte klickt
     //wenn der jewilige Nutzer am Zug ist --> 
     //aufforderung an client zum drehen einer Karte und übergabe der Spielerdaten
-    client.on('flip', (card) => {
-        players.forEach(p => {
-            if (p.id === client.id) {
-                if (p.canFlip) {
-                    io.emit('flipCard', card);
-                    io.emit('playerState', players);
-                }
-            }
-        });
-    })
+    socket.on('flip', (card) => {
+        const user = getCurrentUser(socket.id);
+        if (user.canFlip){
+            io.to(user.room).emit('flipCard', card);
+            io.to(user.room).emit('playerState', user);
+        }
+    });
 
     //wird aufgerufen von der Client-Seite, wenn ein Spieler keinen Match hatte
     //--> klickrechte werden gewechselt
-    client.on('cannotFlip', (playerId) => {
+    /*socket.on('cannotFlip', (playerId) => {
         players.forEach(p => {
             if (p.id === playerId) {
                 p.canFlip = false;
@@ -69,60 +107,83 @@ io.on('connection', client => {
                 p.canFlip = true;
             }
         });
-    });
+    });*/
 
     //Wird aufgerufen, wenn ein Spieler 2 Karten richtig gedreht hat
     //überprüft anhand der Spieler id, um welchen spieler es sich handelt
     //und gibt diesen einen Punkt
-    client.on('updateScore', (playerId) => {
-        players.forEach(p => {
-            if (p.id === playerId && client.id === playerId) {
-                p.score = p.score + 1;
+    socket.on('updateScore', (player) => {
+        const user = getCurrentUser(socket.id);
+        if (user.id === player.id){
+            console.log('hello')
+            player.score = player.score + 1;
 
-                io.emit('updateScore');
 
-                turns = turns + 1;
-                console.log("turns: ", turns)
 
-                let roundLoser = -1;
-                if (turns >= 6) {
-                    //Prüfen welcher Spieler gewonnen hat
-                    roundLoser = checkForRoundWinner(turns);
-                    
-                    //Leben des verlieres und ein Leben abziehen
-                    players[roundLoser].lives = players[roundLoser].lives -1;
-                    players[0].score = 0;
-                    players[1].score = 0;
+            turns = turns + 1;
 
-                    //Prüfen, ob ein Spieler kein Leben mehr hat
-                    if(players[roundLoser].lives === 0){
-                        const winner = roundLoser === 1 ? 0 : 1;
-                        console.log("gameover winner is: ", winner);
-                        io.emit('gameOver', winner);
-                    }
-
-                    newDeck = shuffle(deck);
-                    io.emit('removeLife', roundLoser);
-                    io.emit('resetGame', newDeck); //neu geshuffeltes deck für die neue Runde
-                    j = roundLoser
-                    turns = 3;
+            let roundLoser;
+            if (turns >= 6) {
+            //Prüfen welcher Spieler gewonnen hat
+                roundLoser = checkForRoundWinner(player);
+                
+                //Leben des verlieres und ein Leben abziehen
+                roundLoser.lives =  roundLoser.lives -1;
+                
+                for(var p in getRoomUsers(player.room)){
+                    p.sorce = 0;
                 }
-                console.log(players)
-                if (p.lives === 0) {
-                    console.log('Spiel verloren');
+        
+
+                //Prüfen, ob ein Spieler kein Leben mehr hat
+                if(roundLoser.lives === 0){
+                    const winner = roundLoser;
+                    console.log("gameover winner is: ", winner);
+                    io.emit('gameOver', winner);
                 }
+
+                newDeck = shuffle(deck);
+                io.to(player.room).emit('removeLife', roundLoser);
+                io.to(player.room).emit('resetGame', newDeck); //neu geshuffeltes deck für die neue Runde
+                j = roundLoser.playerCount;
+                turns = 0;
+            
+            if (roundLoser.lives === 0) {
+                console.log('Spiel verloren');
             }
-        });
+        }
+            
+        }
+    });
+
+    socket.on('switchTurn', player => {
+        const user = getCurrentUser(socket.id);
+        users = getRoomUsers(player.room);
+        if(player.id === user.id){
+
+            users.forEach(element => {
+                element.canFlip = !element.canFlip;
+            });
+        }
     });
 
     //const state = createGameState();
 
     //startGameInterval(client, state);
 
-    client.on('dicsonnect', () => {
-        io.emit('message', 'A Player has left the Game')
-    })
-})
+    socket.on('disconnect', () => {
+        const user = userLeave(socket.id);
+
+        if (user){
+            io.to(user.room).emit('message', formatMessage(botName,`${user.username} has left the Game`));
+            io.to(user.room).emit('roomUsers', {
+                room: user.room,
+                users: getRoomUsers(user.room)
+            });
+        }
+
+    });
+});
 
 // function startGameInterval(client, state){
 //     const winner = gameLoop(state);
@@ -145,25 +206,30 @@ function shuffle(a) {
     return a;
 }
 
-function checkForRoundWinner() {
+function checkForRoundWinner(player) {
+    const players = getRoomUsers(player.room);
+    let score  = 50;
+    let looser;
 
-    if (players[0].score > players[1].score) {
-        console.log("Player 1 wins as round!");
-        return 1;
-    } else {
-        console.log("Player 2 wins a round!");
-        return 0;
-    }
+    players.forEach(element => {
+        if (element.score < score){
+            score = element.score
+            looser = element;
+        }
+    });
+    return looser;
 
 }
 
-function randomStart(){
-    if (j === -1) {
-        j = Math.floor(Math.random() * 2);
-    }
+function randomStart(room){
+    var players = getRoomUsers(room);
+    var player = players [Math.floor(Math.random() * players.length)];
+    player.canFlip = true;
 }
 
 
 const PORT = 3000 || process.env.PORT;
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
