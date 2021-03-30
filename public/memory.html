@@ -25,6 +25,7 @@
       <div class="col-md-auto">
         <div class="score-panel">
           <h1>Stats</h1>
+          <hr>
           <ul id="playername1">Player 1</ul>
 
           <p id="scorePlayer1">0</p>
@@ -47,12 +48,9 @@
             <li><i class="fa fa-heart"></i></li>
           </ul>
           <hr>
-          <div class="timer">
-            <i class="fas fa-stopwatch fa-3x">10</i>
-          </div>
-          <hr>
           <div class="restartGame">
-            <button type="button" id="btnRevanche" class="btn btn-primary">Revanche!</button>
+            <button type="button" id="btnRevanche" class="btn btn-primary">Restart!</button>
+            <div id="restartGame"></div>
           </div>
         </div>
       </div>
@@ -119,9 +117,7 @@
       <p><i class="fas fa-comments"></i> Room Name:</p>
       <p id="room-name"></h4>
       
-      <p><i class="fas fa-users player-icon"></i> Players</p>
-  
-      <ul id="users"></ul>
+      
     </div>
 
     <div class="chat-form-container">

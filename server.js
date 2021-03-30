@@ -22,7 +22,6 @@ const {
 //Setzen eines Statischen Ordners
 app.use(express.static(path.join(__dirname, 'public')));
 
-const { createGameState, gameLoop } = require('./utils/game');
 const { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } = require('constants');
 
 //const state = {};
@@ -58,7 +57,7 @@ io.on('connection', socket => {
                     room: user.room,
                     users: getRoomUsers(user.room)
                 });
-
+                shuffle(deck);
                 io.to(user.room).emit('shuffleDeck', deck)
             }
 
@@ -139,7 +138,15 @@ io.on('connection', socket => {
 
     socket.on('revanche', () => {
         const user = getCurrentUser(socket.id);
-        resetGame(user);
+        if(!user.revanche){
+            socket.to(user.room).emit('showRevancheThumb')
+        }
+        user.revanche = true;
+        users = getRoomUsers(user.room);
+        
+        if (users[0].revanche && users[1].revanche){
+            resetGame(user);
+        }    
     });
 
     //const state = createGameState();
@@ -170,10 +177,11 @@ function shuffle(a) {
     return a;
 }
 
-function checkForRoundWinner(player) {
+function checkForRoundLoser(player) {
     const players = getRoomUsers(player.room);
-    console.log(players[0].score, players[1].score);
-    if (players[0].score > players[1].score) {
+    if(players[0].score === players[1].score){
+        return -1;
+    }else if (players[0].score > players[1].score) {
         return players[1];
     }else{
         return players[0];
@@ -188,37 +196,57 @@ function randomStart(room){
 
 function resetRound(user){
         //Prüfen welcher Spieler gewonnen hat
-        roundLoser = checkForRoundWinner(user);
-        console.log(roundLoser.username)
-        
-        //Leben des verlieres und ein Leben abziehen
-        roundLoser.lives =  roundLoser.lives -1;
-        
+        var roundLoser = checkForRoundLoser(user);
         var players = getRoomUsers(user.room);
-        
-        players.forEach(element => element.score = 0);
 
-        //Prüfen, ob ein Spieler kein Leben mehr hat
-        if(roundLoser.lives === 0){
-            const loser = roundLoser;
-            console.log("gameover loser is: ", loser);
-            io.emit('gameOver', loser);
-            resetGame(roundLoser);
-        }else{
-
-            newDeck = (deck);
-            io.to(user.room).emit('removeLife', roundLoser);
+        if(roundLoser === -1){
+            newDeck = shuffle(deck);
             io.to(user.room).emit('resetRound', newDeck); //neu geshuffeltes deck für die neue Runde
-            j = roundLoser.playerCount;
-            turns = 0;
+            io.to(user.room).emit('message', formatMessage(botName, "Draw! New Round!"));
+            players.forEach(element => element.score = 0);
 
+
+        }
+        else{
+            var roundWinner;
+            
+            //Leben des verlieres und ein Leben abziehen
+            roundLoser.lives =  roundLoser.lives -1;
+            
+            
+            players.forEach(element => element.score = 0);
+
+            players.forEach(element => element.canFlip = !element.canFlip);
+
+            players.forEach(element => {if(element.id !== roundLoser.id){roundWinner = element}})
+
+            //Prüfen, ob ein Spieler kein Leben mehr hat
+            if(roundLoser.lives === 0){
+                const loser = roundLoser;
+                console.log("gameover loser is: ", loser);
+                io.emit('gameOver', loser);
+                io.to(user.room).emit('message', formatMessage(botName, "Gamewinner: " + roundWinner.username));
+
+                resetGame(roundLoser);
+            }else{
+                newDeck = (deck);
+                io.to(user.room).emit('removeLife', roundLoser);
+                io.to(user.room).emit('resetRound', newDeck); //neu geshuffeltes deck für die neue Runde
+                io.to(user.room).emit('message', formatMessage(botName, "New Round!"));
+
+                turns = 0;
+            }
         }
 }
 
 function resetGame(user){
+    io.to(user.room).emit('message', formatMessage(botName, "New Game!"));
+
     var players = getRoomUsers(user.room);
     players.forEach(element => element.score = 0);
     players.forEach(element => element.lives = 3);
+    players.forEach(element => element.canFlip = !element.canFlip);
+
     turns = 0;
     randomStart(players[0].room);
     console.log(players)

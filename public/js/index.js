@@ -5,7 +5,9 @@ const playername1 = document.getElementById('playername1');
 const playername2 = document.getElementById('playername2');
 const cards = document.querySelectorAll('.game-card');
 const btnRevanche = document.getElementById('btnRevanche');
+const revanche = document.getElementById('restartGame');
 let playerState;
+let alreadyMatched = [];
 
 
 const { username, room} = Qs.parse(location.search, {
@@ -23,8 +25,14 @@ socket.on('roomUsers',({room , users}) => {
 });
 
 btnRevanche.onclick = () => {   
-    socket.emit('revanche', {username, room});    
+    socket.emit('revanche', {username, room});
 }
+
+socket.on('showRevancheThumb', () => {
+    var thumb = document.createElement("i");
+    thumb.setAttribute("class","fas fa-thumbs-up" );
+    revanche.appendChild(thumb);
+});
 
 chatForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -90,44 +98,44 @@ function flipCard(cardInfo){
             toBeFlipped = card;
         }
     });
-
-    toBeFlipped.classList.add('flip');
-
-
-    if (!cardFlipped) {
-        cardFlipped = true;
-        firstCard = toBeFlipped;
-        return;
-    } else {
-        cardFlipped = false;
-        secondCard = toBeFlipped;
-    }
-
-    if (firstCard.dataset.card === secondCard.dataset.card) {
-        console.log(firstCard + " " + secondCard )
-        firstCard.removeEventListener('click', flipCard);
-        secondCard.removeEventListener('click', flipCard);
-
-        socket.emit('updateScore', playerState)
-        var score = document.getElementById(`scorePlayer${playerState.playerCount+1}`);
+    if(!alreadyMatched.includes(toBeFlipped)){
+        toBeFlipped.classList.add('flip');
 
 
-        score.innerHTML = parseInt(score.innerHTML)  + 1;
+        if (!cardFlipped) {
+            cardFlipped = true;
+            firstCard = toBeFlipped;
+            alreadyMatched.push(firstCard);
+            return;
+        } else {
+            cardFlipped = false;
+            secondCard = toBeFlipped;
+        }
+
+        if (firstCard.dataset.card === secondCard.dataset.card) {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            alreadyMatched.push(secondCard);
+            socket.emit('updateScore', playerState)
+            var score = document.getElementById(`scorePlayer${playerState.playerCount+1}`);
 
 
-        resetTurn();
-    } else {
-        lockGame = true;
-        setTimeout(() => {
-            firstCard.classList.remove('flip');
-            secondCard.classList.remove('flip');
-            firstCard.addEventListener('click', () => sendFlippedCard(card));
-            secondCard.addEventListener('click', () => sendFlippedCard(card));
+            score.innerHTML = parseInt(score.innerHTML)  + 1;
 
-            socket.emit('switchTurn' , playerState)
 
             resetTurn();
-        }, 1500);
+        } else {
+            lockGame = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                alreadyMatched.pop();
+
+                socket.emit('switchTurn' , playerState)
+
+                resetTurn();
+            }, 1500);
+        }
     }
 
 }
@@ -169,7 +177,8 @@ function removeLife(roundLoser) {
 
 //Zurücksetzen des Spielfeldes, wenn eine Runde vorbei ist
 function resetRound(deck) {
-
+    alreadyMatched = [];
+    revanche.innerHTML = '';
     lockGame = true;
     setTimeout(() => {
         cards.forEach(card => {
@@ -183,6 +192,9 @@ function resetRound(deck) {
 }
 
 function resetGame(deck) {
+    alreadyMatched = [];
+    revanche.innerHTML = '';
+
 
     lockGame = true;
     setTimeout(() => {
