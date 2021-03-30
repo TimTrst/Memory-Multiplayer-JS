@@ -7,8 +7,6 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-
-
 const formatMessage = require('./utils/messages');
 const {
     userJoin,
@@ -62,9 +60,9 @@ io.on('connection', socket => {
             }
 
         }else{
-            window.alert("Raum voll!");
-            console.log('server voll')
+            socket.emit('redirectToErrorPage');
         }
+            
     });
 
     socket.on('chatMessage', msg => {
@@ -73,19 +71,6 @@ io.on('connection', socket => {
     });     
 
 
-    /*console.log(j);
-    console.log(players)
-    if (players[j]) {
-        players[j].canFlip = false;
-    }'*/
-
-    /*if (!shuffled) {
-        socket.on('shuffle', msg => {
-            const user = getCurrentUser(socket.id);
-
-            io.to(user.room).emit('shuffleDeck', deck)
-        })
-    }*/
 
     //wird aufgerufen, wenn ein Nutzer auf eine Karte klickt
     //wenn der jewilige Nutzer am Zug ist --> 
@@ -99,17 +84,7 @@ io.on('connection', socket => {
         }
     });
 
-    //wird aufgerufen von der Client-Seite, wenn ein Spieler keinen Match hatte
-    //--> klickrechte werden gewechselt
-    /*socket.on('cannotFlip', (playerId) => {
-        players.forEach(p => {
-            if (p.id === playerId) {
-                p.canFlip = false;
-            } else {
-                p.canFlip = true;
-            }
-        });
-    });*/
+
 
     //Wird aufgerufen, wenn ein Spieler 2 Karten richtig gedreht hat
     //überprüft anhand der Spieler id, um welchen spieler es sich handelt

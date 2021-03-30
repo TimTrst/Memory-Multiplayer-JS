@@ -54,6 +54,9 @@ socket.on('message', msg => {
 
 //Abfangen der Server Antworten --> socket.on
 
+socket.on('redirectToErrorPage', () => {
+    document.location.href = '../error.html'
+});
 socket.on('flipCard', cardInfo => {
     flipCard(cardInfo);
 });
