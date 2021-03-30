@@ -137,9 +137,9 @@ io.on('connection', socket => {
 
                 //Prüfen, ob ein Spieler kein Leben mehr hat
                 if(roundLoser.lives === 0){
-                    const winner = roundLoser;
-                    console.log("gameover winner is: ", winner);
-                    io.emit('gameOver', winner);
+                    const loser = roundLoser;
+                    console.log("gameover loser is: ", loser);
+                    io.emit('gameOver', loser);
                 }
 
                 newDeck = shuffle(deck);
@@ -184,17 +184,6 @@ io.on('connection', socket => {
 
     });
 });
-
-// function startGameInterval(client, state){
-//     const winner = gameLoop(state);
-
-//     if(!winner){
-//         //console.log("startgameint was fired",  state)
-//         client.emit('gameState', JSON.stringify(state));
-//     }else{
-//         client.emit('gameOver');
-//     }
-// }
 
 //Rückgabe von gemischten Zahlen, damit für beide Spieler die gleiche 
 //Sortierung der Karten besteht

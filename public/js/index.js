@@ -15,7 +15,6 @@ const socket = io();
 
 socket.emit('joinRoom', {username, room});
 
-console.log('tesee')
 socket.on('roomUsers',({ room , users}) => {
     console.log('roomUsers')
     outputRoomname(room, users);
@@ -33,16 +32,12 @@ chatForm.addEventListener('submit', (e) => {
     e.target.elements.msg.focus();
 });
 
-
 socket.on('message', msg => {
     outputMessage(msg);
 
     // Nachrichten Scrollen
     chatMessages.scrollTop = chatMessages.scrollHeight;
 });
-
-
-
 
 //Abfangen der Server Antworten --> socket.on
 
@@ -109,7 +104,7 @@ function flipCard(cardInfo) {
 
         socket.emit('updateScore', playerState)
         console.log('cnt:' + playerState.playerCount);
-        var score = document.getElementById(`.scorePlayer1`);
+        var score = document.getElementById('scorePlayer1');
         score.innerHTML = playerState.score +1;
 
 
@@ -200,7 +195,7 @@ function resetGame(deck) {
 function outputMessage(message){
     const div = document.createElement('div');
     div.classList.add('message');
-    div.innerHTML = `<p class=meta>${message.username}<span>${message.time}</span></p>
+    div.innerHTML = `<p class=meta> <b> ${message.username} <span>${message.time}</span> </b></p>
     <p class="text">
         ${message.text}
     </p>`;
@@ -213,7 +208,7 @@ function outputRoomname(room){
 
 function outputUsers(users){
     console.log('testoutput')
-    console.log(user[0])
+    console.log(users[0])
     //playername1.innerText = users[0].username;
     //playername2.innerText = users[1].username;
 }

@@ -7,6 +7,7 @@
 
 body{
     background: rgb(178, 212, 211);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 } 
 
 ul{
@@ -33,6 +34,7 @@ ul{
 
 .gameContainer{
     margin-left: 50px;
+    max-width: 1175px;
 }
 .gameContainer .row{
     flex-wrap: nowrap;
@@ -92,4 +94,80 @@ img{
 .restartGame{
     margin: 20px;
     left: 50%;
+}
+
+/* Join Game/Create Room */
+.join-container {
+    position:absolute;
+    left: 35%;
+    margin-top: 200px;
+    width: 100%;
+    min-height: 100%;
+    padding: 20px;
+  }
+
+.join-title{
+    padding-top: 20px;
+    margin:0;
+}
+
+#form-content {
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border-radius: 10px 10px 10px 10px;
+    background: #fff;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    padding: 0px;
+    -webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+    box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+    text-align: center;
+}
+
+/* Chat-Messages */
+
+.chat-form-container{
+    margin-top: 5px;
+}
+
+.chat-messages{
+    background: white;
+    max-width: 100%;
+    border-radius: 10px;
+    padding: 30px;
+	max-height: 300px;
+	overflow-y: scroll;
+}
+
+.chat-messages .message {
+	padding: 5px;
+	background-color: lightskyblue;
+	border-radius: 5px;
+	overflow-wrap: break-word;
+    margin-bottom: 5px;
+}
+
+#chat-form{
+    width:300px;
+}
+
+.inputMessage{
+    height: 105px;
+}
+
+p{
+    margin-bottom:10px;
+}
+
+.gameInfo{
+    margin-top: 20px;
+    padding-left: 20px;
+}
+
+.player-icon{
+    margin-left: 10px;
+}
+
+.timer{
+    color:rgb(61, 61, 61);
 }
