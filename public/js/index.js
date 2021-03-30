@@ -4,6 +4,7 @@ const roomName = document.getElementById('room-name');
 const playername1 = document.getElementById('playername1');
 const playername2 = document.getElementById('playername2');
 const cards = document.querySelectorAll('.game-card');
+const btnRevanche = document.getElementById('btnRevanche');
 let playerState;
 
 
@@ -13,14 +14,17 @@ const { username, room} = Qs.parse(location.search, {
 
 const socket = io();
 
-socket.emit('joinRoom', {username, room});
+socket.emit('joinRoom', {username , room});
 
-console.log('tesee')
-socket.on('roomUsers',({ room , users}) => {
-    console.log('roomUsers')
+socket.on('roomUsers',({room , users}) => {
     outputRoomname(room, users);
     outputUsers(users);
+
 });
+
+btnRevanche.onclick = () => {   
+    socket.emit('revanche', {username, room});    
+}
 
 chatForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -33,16 +37,12 @@ chatForm.addEventListener('submit', (e) => {
     e.target.elements.msg.focus();
 });
 
-
 socket.on('message', msg => {
     outputMessage(msg);
 
     // Nachrichten Scrollen
     chatMessages.scrollTop = chatMessages.scrollHeight;
 });
-
-
-
 
 //Abfangen der Server Antworten --> socket.on
 
@@ -62,10 +62,12 @@ socket.on('playerState', (user) => {
 socket.on('removeLife', (roundLoser) => {
     removeLife(roundLoser);
 });
+socket.on('resetRound', (deck) => {
+    resetRound(deck);
+});
 socket.on('resetGame', (deck) => {
     resetGame(deck);
 });
-
 
 
 // var gameState;
@@ -77,10 +79,7 @@ let cardFlipped = false;
 let firstCard, secondCard;
 let lockGame = false;
 
-function flipCard(cardInfo) {
-    let cnt = 0;
-    console.log(cnt);
-    cnt++;
+function flipCard(cardInfo){
     if (lockGame) {
         return;
     }
@@ -94,6 +93,7 @@ function flipCard(cardInfo) {
 
     toBeFlipped.classList.add('flip');
 
+
     if (!cardFlipped) {
         cardFlipped = true;
         firstCard = toBeFlipped;
@@ -104,13 +104,15 @@ function flipCard(cardInfo) {
     }
 
     if (firstCard.dataset.card === secondCard.dataset.card) {
+        console.log(firstCard + " " + secondCard )
         firstCard.removeEventListener('click', flipCard);
         secondCard.removeEventListener('click', flipCard);
 
         socket.emit('updateScore', playerState)
-        console.log('cnt:' + playerState.playerCount);
-        var score = document.getElementById(`.scorePlayer1`);
-        score.innerHTML = playerState.score +1;
+        var score = document.getElementById(`scorePlayer${playerState.playerCount+1}`);
+
+
+        score.innerHTML = parseInt(score.innerHTML)  + 1;
 
 
         resetTurn();
@@ -119,15 +121,15 @@ function flipCard(cardInfo) {
         setTimeout(() => {
             firstCard.classList.remove('flip');
             secondCard.classList.remove('flip');
-            console.log(cnt);
-            cnt++;
+            firstCard.addEventListener('click', () => sendFlippedCard(card));
+            secondCard.addEventListener('click', () => sendFlippedCard(card));
+
             socket.emit('switchTurn' , playerState)
 
             resetTurn();
         }, 1500);
     }
-    console.log(cnt)
-    cnt++;
+
 }
 
 function resetTurn() {
@@ -150,6 +152,7 @@ function shuffle(deck) {
 //Warten auf Klick eines Nutzers
 cards.forEach(card => card.addEventListener('click', () => sendFlippedCard(card)));
 
+
 //Senden der geklickten Karte an den Server
 function sendFlippedCard(card) {
     var cardInfo = { name: card.dataset.card, order: card.style.order }
@@ -158,29 +161,15 @@ function sendFlippedCard(card) {
 
 //entfernen eines Herzen aus der Stats Box
 function removeLife(roundLoser) {
-    var heart = document.querySelector(`.heartsPlayer${roundLoser}`);
-    if(heart){
-        heart.removeChild(heart.firstChild);
-    };
+    var heart = document.getElementById(`heartsPlayer${roundLoser.playerCount + 1}`);
+    heart.removeChild(heart.childNodes[0]);
+    heart.removeChild(heart.childNodes[0]);
+
 }
 
 //Zurücksetzen des Spielfeldes, wenn eine Runde vorbei ist
-function resetGame(deck) {
-    var heart1 = document.get(`.heartsPlayer1`);
-    var heart2 = document.querySelector(`.heartsPlayer1`);
+function resetRound(deck) {
 
-    while (heart1.firstChild){
-        heart1.removeChild(heart1.firstChild);
-    }
-
-    while (heart2.firstChild){
-        heart2.removeChild(heart2.firstChild);
-    }
-
-    for(i = 0;i < 4 ;i++){
-        heart1.innerHTML(`<li><i class="fa fa-heart"></i></li>`);
-        heart2.innerHTML(`<li><i class="fa fa-heart"></i></li>`);
-    }
     lockGame = true;
     setTimeout(() => {
         cards.forEach(card => {
@@ -188,11 +177,46 @@ function resetGame(deck) {
         });
         resetTurn();
         shuffle(deck);
-        document.getElementById('.scorePlayer1').innerHTML = 0;
-        document.getElementById('.scorePlayer2').innerHTML = 0;
+        document.getElementById('scorePlayer1').innerHTML = 0;
+        document.getElementById('scorePlayer2').innerHTML = 0;
     }, 3000);
 }
 
+function resetGame(deck) {
+
+    lockGame = true;
+    setTimeout(() => {
+        cards.forEach(card => {
+            card.classList.remove('flip');
+        });
+        shuffle(deck);
+        document.getElementById('scorePlayer1').innerHTML = 0;
+        document.getElementById('scorePlayer2').innerHTML = 0;
+        var heart1 = document.getElementById(`heartsPlayer1`);
+        var heart2 = document.getElementById(`heartsPlayer2`);
+        resetTurn();
+
+        while (heart1.firstChild){
+            heart1.removeChild(heart1.firstChild);
+        }
+
+        while (heart2.firstChild){
+            heart2.removeChild(heart2.firstChild);
+        }
+
+        for(i = 0;i < 3 ;i++){
+            var li1 = document.createElement("li");
+            var li2 = document.createElement("li");
+
+            li1.innerHTML = (`<i class="fa fa-heart"></i>`);
+            li2.innerHTML = (`<i class="fa fa-heart"></i>`);
+
+            heart1.appendChild(li1);
+            heart2.appendChild(li2);
+        }
+  
+    }, 3000);
+}
 
 
 
@@ -200,7 +224,7 @@ function resetGame(deck) {
 function outputMessage(message){
     const div = document.createElement('div');
     div.classList.add('message');
-    div.innerHTML = `<p class=meta>${message.username}<span>${message.time}</span></p>
+    div.innerHTML = `<p class=meta> <b> ${message.username} <span>${message.time}</span> </b></p>
     <p class="text">
         ${message.text}
     </p>`;
@@ -212,9 +236,6 @@ function outputRoomname(room){
 }
 
 function outputUsers(users){
-    console.log('testoutput')
-    console.log(user[0])
-    //playername1.innerText = users[0].username;
-    //playername2.innerText = users[1].username;
+    playername1.innerText = users[0].username;
+    playername2.innerText = users[1].username;
 }
-
