@@ -18,39 +18,39 @@
 
 <body>
   <div class="container gameContainer">
-    <div class="row headerRow"> 
+    <div class="row headerRow">
       <h1 class="heading">MemoryGame</h1>
     </div>
     <div class="row">
       <div class="col-md-auto">
         <div class="score-panel">
           <h1>Stats</h1>
-          Player 1:
+          <hr>
+          <ul id="playername1">Player 1</ul>
 
           <p id="scorePlayer1">0</p>
-
-          <ul id="heartsPlayer0">
-            <li><i class="fa fa-heart"></i></li>
-            <li><i class="fa fa-heart"></i></li>
-            <li><i class="fa fa-heart"></i></li>
-          </ul>
-          
-          <!-- <span class="movesPlayer1">0</span> Move(s) -->
-          
-          Player 2:
-
-          <p id="scorePlayer2">0</p>
 
           <ul id="heartsPlayer1">
             <li><i class="fa fa-heart"></i></li>
             <li><i class="fa fa-heart"></i></li>
             <li><i class="fa fa-heart"></i></li>
           </ul>
-          
-          <span class="movesPlayer2">0</span> Move(s)
-          
+
+          <hr>
+
+          <ul id="playername2">Player 2</ul>
+
+          <p id="scorePlayer2">0</p>
+
+          <ul id="heartsPlayer2">
+            <li><i class="fa fa-heart"></i></li>
+            <li><i class="fa fa-heart"></i></li>
+            <li><i class="fa fa-heart"></i></li>
+          </ul>
+          <hr>
           <div class="restartGame">
-            <button type="button" class="btn btn-primary">Revanche!</button>
+            <button type="button" id="btnRevanche" class="btn btn-primary">Restart!</button>
+            <div id="restartGame"></div>
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@
             <img class="card-front" src="img/pain.png" alt="Pain" />
             <img class="card-back" src="img/solo.jpg" alt="solo" />
           </div>
-      
+
           <div class="game-card" data-card="sasori">
             <img class="card-front" src="img/sasori.jpg" alt="Sasori" />
             <img class="card-back" src="img/solo.jpg" alt="solo" />
@@ -73,7 +73,7 @@
             <img class="card-front" src="img/sasori.jpg" alt="Sasori" />
             <img class="card-back" src="img/solo.jpg" alt="solo" />
           </div>
-      
+
           <div class="game-card" data-card="kakuzo">
             <img class="card-front" src="img/kakuzo.jpg" alt="Kakuzo" />
             <img class="card-back" src="img/solo.jpg" alt="solo" />
@@ -82,7 +82,7 @@
             <img class="card-front" src="img/kakuzo.jpg" alt="Kakuzo" />
             <img class="card-back" src="img/solo.jpg" alt="solo" />
           </div>
-      
+
           <div class="game-card" data-card="kakashi">
             <img class="card-front" src="img/kakashi.jpg" alt="Kakashi" />
             <img class="card-back" src="img/solo.jpg" alt="solo" />
@@ -91,7 +91,7 @@
             <img class="card-front" src="img/kakashi.jpg" alt="Kakashi" />
             <img class="card-back" src="img/solo.jpg" alt="solo" />
           </div>
-      
+
           <div class="game-card" data-card="itachi">
             <img class="card-front" src="img/itachi.jpg" alt="Itachi" />
             <img class="card-back" src="img/solo.jpg" alt="solo" />
@@ -100,7 +100,7 @@
             <img class="card-front" src="img/itachi.jpg" alt="Itachi" />
             <img class="card-back" src="img/solo.jpg" alt="solo" />
           </div>
-      
+
           <div class="game-card" data-card="tenten">
             <img class="card-front" src="img/tenten.png" alt="Tenten" />
             <img class="card-back" src="img/solo.jpg" alt="solo" />
@@ -111,16 +111,34 @@
           </div>
         </section>
       </div>
-      <div class="col-md-auto">
-        <div class="timer"></div>
-           <i class="fas fa-stopwatch fa-5x">10</i>
+    </div>
+  
+    <div class="row gameInfo">
+      <p><i class="fas fa-comments"></i> Room Name:</p>
+      <p id="room-name"></h4>
+      
+      
+    </div>
+
+    <div class="chat-form-container">
+      <div class="row" id="chat">
+        <div class="col">
+          <div class="chat-messages"></div>
+        </div>
+        <div class="col-md-auto" style="padding: 0">
+          <form id="chat-form">
+            <input class="form-control inputMessage" id="msg" type="text" placeholder="Enter Message" required
+              autocomplete="off" />
+            <button class="form-control btn btn-primary"><i class="fas fa-paper-plane"></i> Send</button>
+          </form>
         </div>
       </div>
     </div>
-    <div class="row">
-    </div>
   </div>
-
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.1/qs.min.js"
+    integrity="sha512-aTKlYRb1QfU1jlF3k+aS4AqTpnTXci4R79mkdie/bp6Xm51O5O3ESAYhvg6zoicj/PD6VYY0XrYwsWLcvGiKZQ=="
+    crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="js/index.js"></script>
 </body>
