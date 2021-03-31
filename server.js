@@ -15,22 +15,15 @@ const {
     getRoomUsers
   } = require('./utils/users');
 
-
-
 //Setzen eines Statischen Ordners
 app.use(express.static(path.join(__dirname, 'public')));
 
 const { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } = require('constants');
 
-//const state = {};
 shuffled = false;
 
 let turns = 0;
-const deck = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12];
-
-//shuffle(deck);
-
-let j = -1; //Zufälliges würfeln einer 1 oder 2 für einen zufälligen Start
+const deck = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11];
 
 const botName = 'GameMaster';
 io.on('connection', socket => {
@@ -48,7 +41,6 @@ io.on('connection', socket => {
         
             socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${user.username} has joined the Game`));
 
-
             if(playerCount === 1){
                 randomStart(room);
                 io.to(user.room).emit('roomUsers', {
@@ -58,19 +50,15 @@ io.on('connection', socket => {
                 shuffle(deck);
                 io.to(user.room).emit('shuffleDeck', deck)
             }
-
         }else{
             socket.emit('redirectToErrorPage');
-        }
-            
+        } 
     });
 
     socket.on('chatMessage', msg => {
         const user = getCurrentUser(socket.id);
         io.to(user.room).emit('message', formatMessage(user.username, msg));
     });     
-
-
 
     //wird aufgerufen, wenn ein Nutzer auf eine Karte klickt
     //wenn der jewilige Nutzer am Zug ist --> 
@@ -83,8 +71,6 @@ io.on('connection', socket => {
             io.to(user.room).emit('playerState', user);
         }
     });
-
-
 
     //Wird aufgerufen, wenn ein Spieler 2 Karten richtig gedreht hat
     //überprüft anhand der Spieler id, um welchen spieler es sich handelt
@@ -107,6 +93,9 @@ io.on('connection', socket => {
 
             users.forEach(element => {
                 element.canFlip = !element.canFlip;
+                if(element.canFlip){
+                    io.to(user.room).emit('message', formatMessage(botName,`${element.username}'s turn`));
+                }
             });
         }
     });
@@ -124,10 +113,6 @@ io.on('connection', socket => {
         }    
     });
 
-    //const state = createGameState();
-
-    //startGameInterval(client, state);
-
     socket.on('disconnect', () => {
         const user = userLeave(socket.id);
 
@@ -138,7 +123,6 @@ io.on('connection', socket => {
                 users: getRoomUsers(user.room)
             });
         }
-
     });
 });
 
@@ -179,8 +163,6 @@ function resetRound(user){
             io.to(user.room).emit('resetRound', newDeck); //neu geshuffeltes deck für die neue Runde
             io.to(user.room).emit('message', formatMessage(botName, "Draw! New Round!"));
             players.forEach(element => element.score = 0);
-
-
         }
         else{
             var roundWinner;
@@ -230,12 +212,10 @@ function resetGame(user){
     newDeck = shuffle(deck);
     io.to(user.room).emit('resetGame', newDeck); //neu geshuffeltes deck für die neue Runde
     console.log('Game neu gestartet')
-
 }
 
 
 const PORT = 3000 || process.env.PORT;
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
 
