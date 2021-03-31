@@ -4,6 +4,6 @@ A client-server programming project based on the classic game Memory by Tim Tros
 It has multiplayer function and a chat.
 
 Node.js is required for this project to run.
-It uses Socket.io
+and it uses Socket.io for realtime client-server communication.
 
 To run it type "node server" or "node ." in a terminal (path of the project).
