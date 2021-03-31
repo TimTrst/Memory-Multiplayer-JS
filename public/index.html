@@ -29,7 +29,7 @@
             </div>
             
             <div class="mb-4">
-              <label for="roomname">New Room</label>
+              <label for="roomname">New Room/Join Room</label>
               <input type="text" name="roomname" id="roomname" placeholder="Enter your Roomname..." />
               <button class="btn btn-secondary" id="btnAdd">Create</button>
             </div>
@@ -37,11 +37,11 @@
             <div class="mb-4">
               <label for="room">Room</label>
               <select name="room" id="room">
-                <option value="" disabled selected>Select or Create Room</option>
+                <option value="" disabled selected>Select Room</option>
               </select>
             </div>
             <hr>
-            <button class="mb-2 btn btn-primary"type="submit" class="btn">Join Game</button>
+            <button class="mb-2 btn btn-primary"type="submit">Join Game</button>
           </div>
         </form>
       </main>
@@ -56,7 +56,7 @@
       e.preventDefault();
 
       if (newRoom.value == '') {
-        alert('Please enter the name.');
+        alert('Please enter a name.');
         return;
       }
 

@@ -233,8 +233,6 @@ function resetGame(deck) {
     }, 3000);
 }
 
-
-
 //Output message to Dom
 function outputMessage(message){
     const div = document.createElement('div');
