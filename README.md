@@ -23,5 +23,5 @@ Edit:
 - in login form both players need to create the room and then join it
 - when the room with a specific name was alredy created, the other player will join in with the other player --> game starts
   (this is not really a bug, but can be confusing and is set to be fixed)
-- sometimes the game logic breaks when clicked to fast and too many times
+- sometimes the game logic breaks when clicking too fast or too many times
 - refreshing the page causes the websocket to see you as a new user --> game breaks
